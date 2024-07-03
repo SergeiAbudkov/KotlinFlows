@@ -3,6 +3,9 @@ package com.kotlinflows.simplemvvmkotlinflows.model.colors
 import android.graphics.Color
 import com.kotlinflows.foundation.model.coroutines.IoDispatcher
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 
 /**
@@ -41,13 +44,19 @@ class InMemoryColorsRepository(
         return@withContext currentColor
     }
 
-    override suspend fun setCurrentColor(color: NamedColor) = withContext(ioDispatcher.value) {
-        delay(1000)
+    override fun setCurrentColor(color: NamedColor): Flow<Int> = flow {
         if (currentColor != color) {
+            for (i in 0..100 step (2)) {
+                delay(30)
+                emit(i)
+            }
             currentColor = color
             listeners.forEach { it(color) }
+        } else {
+            emit(100)
         }
-    }
+
+    }.flowOn(ioDispatcher.value)
 
     companion object {
         private val AVAILABLE_COLORS = listOf(

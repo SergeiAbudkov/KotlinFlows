@@ -18,6 +18,7 @@ import com.kotlinflows.simplemvvmkotlinflows.model.colors.ColorsRepository
 import com.kotlinflows.simplemvvmkotlinflows.model.colors.NamedColor
 import com.kotlinflows.simplemvvmkotlinflows.views.changecolor.ChangeColorFragment.Screen
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class ChangeColorViewModel(
@@ -64,7 +65,7 @@ class ChangeColorViewModel(
             val currentColorId =
                 _currentColorId.value ?: throw IllegalStateException("Color ID should not be NULL")
             val currentColor = colorsRepository.getById(currentColorId)
-            colorsRepository.setCurrentColor(currentColor)
+            colorsRepository.setCurrentColor(currentColor).collect()
 
             navigator.goBack(result = currentColor)
         } catch (e: Exception) {
