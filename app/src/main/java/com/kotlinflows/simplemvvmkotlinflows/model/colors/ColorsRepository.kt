@@ -32,15 +32,6 @@ interface ColorsRepository : Repository {
      */
     fun setCurrentColor(color: NamedColor): Flow<Int>
 
-    /**
-     * Listen for the current color changes.
-     * The listener is triggered immediately with the current value when calling this method.
-     */
-    fun addListener(listener: ColorListener)
-
-    /**
-     * Stop listening for the current color changes
-     */
-    fun removeListener(listener: ColorListener)
+    fun listenCurrentColor(): Flow<NamedColor>
 
 }

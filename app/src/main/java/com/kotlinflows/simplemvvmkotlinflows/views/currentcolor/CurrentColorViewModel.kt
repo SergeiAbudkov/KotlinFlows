@@ -16,7 +16,6 @@ import com.kotlinflows.foundation.sideeffects.toasts.Toasts
 import com.kotlinflows.foundation.views.BaseViewModel
 import com.kotlinflows.foundation.views.LiveResult
 import com.kotlinflows.foundation.views.MutableLiveResult
-import com.kotlinflows.simplemvvmkotlinflows.model.colors.ColorListener
 import com.kotlinflows.simplemvvmkotlinflows.model.colors.ColorsRepository
 import com.kotlinflows.simplemvvmkotlinflows.model.colors.NamedColor
 import com.kotlinflows.simplemvvmkotlinflows.views.changecolor.ChangeColorFragment
@@ -36,20 +35,16 @@ class CurrentColorViewModel(
     private val _currentColor = MutableLiveResult<NamedColor>(PendingResult())
     val currentColor: LiveResult<NamedColor> = _currentColor
 
-    private val colorListener: ColorListener = {
-        _currentColor.postValue(SuccessResult(it))
-    }
-
     // --- example of listening results via model layer
 
     init {
-        colorsRepository.addListener(colorListener)
+        viewModelScope.launch {
+            colorsRepository.listenCurrentColor()
+                .collect {
+                    _currentColor.postValue(SuccessResult(it))
+                }
+        }
         load()
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        colorsRepository.removeListener(colorListener)
     }
 
     // --- example of listening results directly from the screen

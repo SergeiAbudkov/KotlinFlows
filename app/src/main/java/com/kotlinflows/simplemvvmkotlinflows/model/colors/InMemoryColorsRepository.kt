@@ -2,8 +2,13 @@ package com.kotlinflows.simplemvvmkotlinflows.model.colors
 
 import android.graphics.Color
 import com.kotlinflows.foundation.model.coroutines.IoDispatcher
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
@@ -19,14 +24,15 @@ class InMemoryColorsRepository(
 
     private val listeners = mutableSetOf<ColorListener>()
 
-    override fun addListener(listener: ColorListener) {
-        listeners += listener
-        listener(currentColor)
-    }
+    override fun listenCurrentColor(): Flow<NamedColor> = callbackFlow {
+        val listener: ColorListener = {
+            trySend(it)
+        }
+        listeners.add(listener)
 
-    override fun removeListener(listener: ColorListener) {
-        listeners -= listener
+        awaitClose { listeners.remove(listener) }
     }
+        .buffer(Channel.CONFLATED)
 
     override suspend fun getAvailableColors(): List<NamedColor> = withContext(ioDispatcher.value) {
         delay(1000)
