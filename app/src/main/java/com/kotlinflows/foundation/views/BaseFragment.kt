@@ -4,11 +4,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.kotlinflows.foundation.model.ErrorResult
 import com.kotlinflows.foundation.model.PendingResult
 import com.kotlinflows.foundation.model.Result
 import com.kotlinflows.foundation.model.SuccessResult
 import com.kotlinflows.foundation.views.activity.ActivityDelegateHolder
+import kotlinx.coroutines.launch
 
 /**
  * Base class for all fragments
