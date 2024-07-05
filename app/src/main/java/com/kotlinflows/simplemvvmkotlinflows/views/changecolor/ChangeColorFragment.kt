@@ -59,7 +59,10 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
                 adapter.items = viewState.colorList
                 binding.saveButton.visibility = if (viewState.showSaveButton) View.VISIBLE else View.INVISIBLE
                 binding.cancelButton.visibility = if (viewState.showCancelButton) View.VISIBLE else View.INVISIBLE
-                binding.saveProgressBar.visibility = if (viewState.showSaveProgressBar) View.VISIBLE else View.GONE
+
+                binding.saveProgressGroup.visibility = if (viewState.showSaveProgressBar) View.VISIBLE else View.GONE
+                binding.saveProgressBar.progress = viewState.saveProgressPercentage
+                binding.savingPercentageTextView.text = viewState.saveProgressPercentageMessage
             }
         }
 
