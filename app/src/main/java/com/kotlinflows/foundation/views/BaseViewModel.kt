@@ -66,6 +66,10 @@ open class BaseViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Launch the specified suspending [block] and use its result as a value for the
+     * provided [stateFlow].
+     */
     fun <T> into(stateFlow: MutableStateFlow<Result<T>>, block: suspend () -> T) {
         viewModelScope.launch {
             try {
@@ -76,6 +80,17 @@ open class BaseViewModel : ViewModel() {
         }
     }
 
+
+
+    /**
+     * Create a [MutableStateFlow] which reflects a state of value with the
+     * specified key managed by [SavedStateHandle]. When the value is updated,
+     * the instance of [MutableStateFlow] emits a new item with the updated value.
+     * When some new value is assigned to the [MutableStateFlow] via [MutableStateFlow.value]
+     * it is recorded into [SavedStateHandle]. So actually this method creates a
+     * [MutableStateFlow] which works in the same way as [MutableLiveData] returned
+     * by [SavedStateHandle.getLiveData].
+     */
     fun <T> SavedStateHandle.asStateFlow(key: String, initialValue: T): MutableStateFlow<T> {
         val savedStateHandle = this
         val mutableFlow = MutableStateFlow(savedStateHandle[key] ?: initialValue)

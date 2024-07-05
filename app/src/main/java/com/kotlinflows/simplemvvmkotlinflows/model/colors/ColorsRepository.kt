@@ -32,6 +32,7 @@ interface ColorsRepository : Repository {
      */
     fun setCurrentColor(color: NamedColor): Flow<Int>
 
+
     fun listenCurrentColor(): Flow<NamedColor>
 
 }

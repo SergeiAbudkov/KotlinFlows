@@ -16,6 +16,7 @@ import com.kotlinflows.foundation.views.BaseFragment
 import com.kotlinflows.foundation.views.BaseScreen
 import com.kotlinflows.foundation.views.HasScreenTitle
 import com.kotlinflows.foundation.views.screenViewModel
+import com.kotlinflows.simplemvvmkotlinflows.views.collectFlow
 import com.kotlinflows.simplemvvmkotlinflows.views.onTryAgain
 import com.kotlinflows.simplemvvmkotlinflows.views.renderSimpleResult
 import kotlinx.coroutines.launch
@@ -53,16 +54,12 @@ class ChangeColorFragment : BaseFragment(), HasScreenTitle {
         binding.saveButton.setOnClickListener { viewModel.onSavePressed() }
         binding.cancelButton.setOnClickListener { viewModel.onCancelPressed() }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.viewState.collect { result ->
-                    renderSimpleResult(binding.root, result) { viewState ->
-                        adapter.items = viewState.colorList
-                        binding.saveButton.visibility = if (viewState.showSaveButton) View.VISIBLE else View.INVISIBLE
-                        binding.cancelButton.visibility = if (viewState.showCancelButton) View.VISIBLE else View.INVISIBLE
-                        binding.saveProgressBar.visibility = if (viewState.showSaveProgressBar) View.VISIBLE else View.GONE
-                    }
-                }
+        collectFlow(viewModel.viewState) {result ->
+            renderSimpleResult(binding.root, result) { viewState ->
+                adapter.items = viewState.colorList
+                binding.saveButton.visibility = if (viewState.showSaveButton) View.VISIBLE else View.INVISIBLE
+                binding.cancelButton.visibility = if (viewState.showCancelButton) View.VISIBLE else View.INVISIBLE
+                binding.saveProgressBar.visibility = if (viewState.showSaveProgressBar) View.VISIBLE else View.GONE
             }
         }
 

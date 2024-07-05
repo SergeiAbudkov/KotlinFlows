@@ -30,9 +30,12 @@ class InMemoryColorsRepository(
         }
         listeners.add(listener)
 
-        awaitClose { listeners.remove(listener) }
+        awaitClose {
+            // this block is executed upon cancelling/closing, useful for cleanup logic
+            listeners.remove(listener)
+        }
     }
-        .buffer(Channel.CONFLATED)
+        .buffer(Channel.CONFLATED) // Channel.CONFLATED is useful when you need only the most recent values
 
     override suspend fun getAvailableColors(): List<NamedColor> = withContext(ioDispatcher.value) {
         delay(1000)

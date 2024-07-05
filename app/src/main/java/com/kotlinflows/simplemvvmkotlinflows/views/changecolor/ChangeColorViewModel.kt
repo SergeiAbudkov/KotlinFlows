@@ -65,8 +65,11 @@ class ChangeColorViewModel(
         try {
             _saveInProgress.value = true
             val currentColorId =
-                _currentColorId.value ?: throw IllegalStateException("Color ID should not be NULL")
+                _currentColorId.value
             val currentColor = colorsRepository.getById(currentColorId)
+
+            // here we don't want to listen progress but only wait for operation completion
+            // so we use collect() without any inner block:
             colorsRepository.setCurrentColor(currentColor).collect()
 
             navigator.goBack(result = currentColor)

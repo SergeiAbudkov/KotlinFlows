@@ -39,6 +39,9 @@ class CurrentColorViewModel(
 
     init {
         viewModelScope.launch {
+            // as listenCurrentColor() returns infinite flow,
+            // collecting is cancelled when view-model is going to be destroyed
+            // (because collect() is executed inside viewModelScope)
             colorsRepository.listenCurrentColor()
                 .collect {
                     _currentColor.postValue(SuccessResult(it))
@@ -46,8 +49,6 @@ class CurrentColorViewModel(
         }
         load()
     }
-
-    // --- example of listening results directly from the screen
 
     override fun onResult(result: Any) {
         super.onResult(result)
