@@ -16,6 +16,7 @@ import com.kotlinflows.foundation.model.takeSuccess
 import com.kotlinflows.foundation.sideeffects.navigator.Navigator
 import com.kotlinflows.foundation.sideeffects.resources.Resources
 import com.kotlinflows.foundation.sideeffects.toasts.Toasts
+import com.kotlinflows.foundation.utils.finiteShareIn
 import com.kotlinflows.foundation.views.BaseViewModel
 import com.kotlinflows.simplemvvmkotlinflows.model.colors.ColorsRepository
 import com.kotlinflows.simplemvvmkotlinflows.model.colors.NamedColor
@@ -26,8 +27,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.sample
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 
 class ChangeColorViewModel(
@@ -81,22 +80,18 @@ class ChangeColorViewModel(
             // here we don't want to listen progress but only wait for operation completion
             // so we use collect() without any inner block:
             val sharedFlowCurrentColor = colorsRepository.setCurrentColor(currentColor)
-                .shareIn(this, started = SharingStarted.Eagerly, replay = 1)
+                .finiteShareIn(this, started = SharingStarted.Eagerly, replay = 1)
+
 
             val instantJob = launch {
-                sharedFlowCurrentColor
-                    .takeWhile { it != 100 }
-                    .collect { percentage ->
+                sharedFlowCurrentColor.collect { percentage ->
                     _instantSaveInProgress.value = PercentageProgress(percentage)
 
                 }
             }
 
             val sampledJob = launch {
-                sharedFlowCurrentColor
-                    .takeWhile { it != 100 }
-                    .sample(200)
-                    .collect {percentageText ->
+                sharedFlowCurrentColor.sample(200).collect {percentageText ->
                     _sampledSaveInProgress.value = PercentageProgress(percentageText)
 
                 }
