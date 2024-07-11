@@ -13,5 +13,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "KoroutinesKotlin"
+rootProject.name = "KotlinFlows"
 include ':app'

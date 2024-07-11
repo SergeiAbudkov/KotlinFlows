@@ -19,6 +19,8 @@ class App : Application(), BaseApplication {
      * Place your singleton scope dependencies here
      */
     override val singletonScopeDependencies: List<Any> = listOf(
+        ioDispatcher,
+        workerDispatcher,
         InMemoryColorsRepository(ioDispatcher)
     )
 
